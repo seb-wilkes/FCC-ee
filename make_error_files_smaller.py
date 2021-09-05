@@ -9,9 +9,8 @@ REMEMBER: you can comment out things that aren't useful to you, but the template
 
 '''
 #%%
-os.system('cp ./clean/bkup/ealign_all.err ./clean/ealign_all.err')
-with in_place.InPlace('./clean/ealign_all.err', \
-        backup='./clean/eal.err') as file: #backup optional
+os.system('cp ./ealign_all.err ./backup_file.err') #This allows you to reset things if things go wrong
+with in_place.InPlace('./ealign_all.err') as file:
     for line in file:
         #removes DRIFT
         if line[2] == 'D':
