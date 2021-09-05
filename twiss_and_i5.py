@@ -32,10 +32,11 @@ class twiss_functions():
         
     def get_bending_names(self, directory, reference_flag=True):
         ''' It searches within: cwd + directory + "/full_sequence.seq"'''
+        
         line_start, line_end = self.file_search_boundaries(reference_flag)
         with open(directory + '/full_sequence.seq') as f:
             iterable = itertools.islice(f, line_start, line_end)
-            for line in iterable:  # start=2nd, stop=None for all
+            for line in iterable:
                 # process lines                
                 if line[1]=='b':
                     # Extract name and dipole magnet length
@@ -58,8 +59,8 @@ class twiss_functions():
         for i in range(0, len(dipoles)):
             bending_radii[i] = self.data[dipoles.index[i].split(sep='.')[0].lower()]["R"]
     
-    def gamma_twiss(self, alf, bet):
-        return (1+alf**2)/bet
+    def gamma_twiss(self, alfa, beta):
+        return (1+alfa**2)/beta
 
     def curly_H(self, alpha, beta, disp_x, disp_px):
         gamma_H = self.gamma_twiss(alpha, beta)
@@ -75,8 +76,8 @@ class twiss_functions():
 
     def b_mag(self, a_o, b_o, a_m, b_m):
         '''
-        _o suffix is the original
-        _m is the machine
+        _o suffix is the original (reference) lattice
+        _m is the machine to be tested
         '''
         # First noramlise the coordianate
         beta_norm = b_m/b_o
