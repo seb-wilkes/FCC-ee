@@ -24,5 +24,9 @@ non_ip = non_ip[~((non_ip['S']>s_ip[0]) & (non_ip['S']< s_ip[1])) \
         & ~(((non_ip['S']>s_ip[6]) & (non_ip['S']< s_ip[7])))]
 `
 
-It is also important to ensure that the differences in file sizes are accounted for. Assuming they start in the same place, an easy way to get over this is to create an overlap (booL) index.
+It is also important to ensure that the differences in file sizes are accounted for. Assuming they start in the same place, an easy way to get over this is to create an overlap (boolean) index.
 `overlap_array = data_frame.index.isin(baseline_data.index)`
+
+
+Finally, there may be a more direct way using Pandas, but I extracted the TTbar emittance from the textfile using (line 15 is for the twiss output, but it shouldn't vary between files):
+`ex_o = float(linecache.getline(file_location, 15).split()[-1])*(182.5**2)`
