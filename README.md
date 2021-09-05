@@ -1,5 +1,6 @@
 # FCC-ee
-Any research I have taken part in regarding the FCC-ee.
+Any research I have taken part in regarding the FCC-ee. 
+Thanks to Tessa K Charles for her supervision during summer 2021.
 
 ## Tips for implementing
 I found filtering most easily done using Regex. For instance: `baseline_data = tfs.read('./reference/twiss_sr.twiss', index='NAME').filter(regex='^B[^P].*', axis=0)` 
