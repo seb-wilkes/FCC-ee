@@ -2,7 +2,7 @@
 Any research I have taken part in regarding the FCC-ee. 
 Thanks to Tessa Charles (Liverpool) for her supervision during summer 2021.
 ## Main usage
-I have intended this to be called like any other class in python. From there you can quickly access the relevant assiocated twiss functions (EG: curly H, or Bmag). Moreover, you can also get the twiss data, bending radii and 5th synchrotron integral all by just specifying the directory and file name. Currently you need to manually update the sequence file names, but this will be addressed in a future update.
+I have intended this to be called like any other class in python. From there you can quickly access the relevant assiocated twiss functions (EG: curly H, or Bmag). Moreover, you can also get the twiss data, bending radii and 5th synchrotron integral all by just specifying the relevant directory and the file name containing the twiss data. Currently you need to manually update the sequence file names, but this will be addressed in a future update.
 
 ## Tips for implementing
 I found filtering most easily done using Regex. For instance: `baseline_data = tfs.read('./reference/twiss_sr.twiss', index='NAME').filter(regex='^B[^P].*', axis=0)` 
