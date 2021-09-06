@@ -1,6 +1,6 @@
 # FCC-ee
 Any research I have taken part in regarding the FCC-ee. 
-Thanks to Tessa K Charles for her supervision during summer 2021.
+Thanks to Tessa Charles (Liverpool) for her supervision during summer 2021.
 
 ## Tips for implementing
 I found filtering most easily done using Regex. For instance: `baseline_data = tfs.read('./reference/twiss_sr.twiss', index='NAME').filter(regex='^B[^P].*', axis=0)` 
@@ -30,3 +30,5 @@ It is also important to ensure that the differences in file sizes are accounted 
 
 Finally, there may be a more direct way using Pandas, but I extracted the TTbar emittance from the textfile using (line 15 is for the twiss output, but it shouldn't vary between files):
 `ex_o = float(linecache.getline(file_location, 15).split()[-1])*(182.5**2)`
+
+Any suggestions / comments, please don't hesitate to contact me.
