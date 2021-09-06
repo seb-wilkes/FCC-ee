@@ -6,9 +6,10 @@ import tfs
 # Require an efficient way to move through an iterable list
 import itertools  
 #%%
+
 class twiss_functions():
     """
-    This class calculates the twiss parameters as required. It also includes a function to calculate the 
+    This class calculates the twiss parameters as required. It also includes functions to calculate the 
     5th Synchrotron Integral by extracting the relevant bending Radii.
     Lastly, included is a function to calculate BMag.
     """
@@ -33,8 +34,9 @@ class twiss_functions():
         return line_start,line_end
         
     def get_bending_names(self, directory, reference_flag=True):
-        ''' It searches within: cwd + directory/ + "full_sequence.seq"
-        EG: "~'''
+        ''' It searches within: cwd + directory + "full_sequence.seq"
+        EG: "/home/sebw/madx/" + "reference/" +  file. Note the directory needs a /
+        '''
         line_start, line_end = self.file_search_boundaries(reference_flag)
         with open(directory + 'full_sequence.seq') as f:
             iterable = itertools.islice(f, line_start, line_end)
@@ -72,7 +74,6 @@ class twiss_functions():
         radii = self.generate_radii(directory, dipole_data, True,  reference_flag)
         return dipole_data, radii
 
-
     def gamma_twiss(self, alf, bet):
         return (1+alf**2)/bet
 
@@ -102,7 +103,7 @@ class twiss_functions():
 
     def b_mag(self, a_o, b_o, a_m, b_m):
         '''
-        _o suffix is the original
+        _o suffix is the original (reference) lattice
         _m is the machine
         '''
         # First noramlise the coordianate
