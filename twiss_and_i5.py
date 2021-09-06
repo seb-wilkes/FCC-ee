@@ -1,6 +1,8 @@
 #%%
 import os
 import numpy as np
+# Required to extract tfs data
+import tfs
 # Require an efficient way to move through an iterable list
 import itertools  
 #%%
@@ -10,8 +12,8 @@ class twiss_functions():
     5th Synchrotron Integral by extracting the relevant bending Radii.
     Lastly, included is a function to calculate BMag.
     """
-    def __init__(self, location=''):
-        self.root = '/home/sebw/madx/cern/fcc_ee_stuff/' + location
+    def __init__(self, location='', root ="./"):
+        self.root = root + location
         os.chdir(self.root) # can comment out if preferred
         self.data = {}
         self.check_flag = False
@@ -31,12 +33,12 @@ class twiss_functions():
         return line_start,line_end
         
     def get_bending_names(self, directory, reference_flag=True):
-        ''' It searches within: cwd + directory + "/full_sequence.seq"'''
-        
+        ''' It searches within: cwd + directory/ + "full_sequence.seq"
+        EG: "~'''
         line_start, line_end = self.file_search_boundaries(reference_flag)
-        with open(directory + '/full_sequence.seq') as f:
+        with open(directory + 'full_sequence.seq') as f:
             iterable = itertools.islice(f, line_start, line_end)
-            for line in iterable:
+            for line in iterable:  # start=2nd, stop=None for all
                 # process lines                
                 if line[1]=='b':
                     # Extract name and dipole magnet length
@@ -52,15 +54,27 @@ class twiss_functions():
                         self.data[bend_name]["l"]/(2*np.sin(0.5*self.data[bend_name]["a"])))
         self.check_flag = True
 
-    def update_radii(self, directory, dipoles, bending_radii, force = False):
+    def update_radii(self, directory, dipoles, bending_radii, force = False, reference_flag=True):
         ''' Tool used to generate radii array '''
         if force or not self.check_flag:
-            self.get_bending_names(directory)
+            self.get_bending_names(directory, reference_flag)
         for i in range(0, len(dipoles)):
             bending_radii[i] = self.data[dipoles.index[i].split(sep='.')[0].lower()]["R"]
-    
-    def gamma_twiss(self, alfa, beta):
-        return (1+alfa**2)/beta
+
+    def generate_radii(self, directory, dipoles, force = False, reference_flag=True):
+        radii = np.zeros(len(dipoles))
+        self.update_radii(directory, dipoles, radii, force, reference_flag)
+        return radii
+
+    def get_dipoles_and_radii(self, directory, twiss_data_name, reference_flag=True):
+        # read only dipole data
+        dipole_data = tfs.read(directory + '/' + twiss_data_name, index='NAME').filter(regex='^B[^P].*', axis=0)
+        radii = self.generate_radii(directory, dipole_data, True,  reference_flag)
+        return dipole_data, radii
+
+
+    def gamma_twiss(self, alf, bet):
+        return (1+alf**2)/bet
 
     def curly_H(self, alpha, beta, disp_x, disp_px):
         gamma_H = self.gamma_twiss(alpha, beta)
@@ -74,10 +88,22 @@ class twiss_functions():
         return np.sum(1.0/(radii**3)* \
             self.curly_H(alpha, beta, disp_x, disp_px)*delta_s)
 
+    def compute_I5_with_var(self, directory, twiss_data_name):
+        ''' 
+        This also returns the dipole twiss values as a function of _s_, as well as calling
+        compute_I5(), and finally the radii. Please note, the twiss parameters are outputted as a 2D numpy array;
+        the indices 0,4 correspond to "S","ALFX","BETX","DX","DPX".
+        '''
+        dipole_data, radii = self.get_dipoles_and_radii(directory, twiss_data_name)
+        variables =  np.array([dipole_data['S'], dipole_data['ALFX'], \
+            dipole_data['BETX'], dipole_data['DX'], dipole_data['DPX']])
+        I5 = self.compute_I5(variables[1], variables[2], variables[3], variables[4], radii, variables[0])
+        return I5, variables, radii
+
     def b_mag(self, a_o, b_o, a_m, b_m):
         '''
-        _o suffix is the original (reference) lattice
-        _m is the machine to be tested
+        _o suffix is the original
+        _m is the machine
         '''
         # First noramlise the coordianate
         beta_norm = b_m/b_o
